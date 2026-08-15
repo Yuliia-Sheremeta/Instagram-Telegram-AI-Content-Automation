@@ -1,0 +1,447 @@
+{
+  "name": "Instagram & Telegram AI Content AutomationCreated by: Yuliia Sheremeta GitHUB",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=Ти експерт зі створення вірусного контенту для Instagram і Telegram.\n\nТема:\n{{ $json.message.text }}\n\nСтвори відповідь ВИКЛЮЧНО у форматі JSON.\n\nФормат:\n\n{\n\"instagram_post\": \"...\",\n\"instagram_hashtags\": \"...\",\n\"instagram_image_prompt\": \"...\",\n\n\"telegram_post\": \"...\",\n\"telegram_hashtags\": \"...\",\n\"telegram_image_prompt\": \"...\"\n}\n\nПравила:\n\ninstagram_post:\n\n- Готовий пост українською мовою.\n- До 2200 символів.\n- Містичний стиль.\n- Захоплюючий початок.\n- Емоційна атмосфера.\n- Заклик написати коментар або поділитися думкою в кінці.\n- Не вставляй хештеги всередину тексту.\n\ninstagram_hashtags:\n\n- Обов'язково.\n- 5 релевантних українських хештегів.\n- Один рядок.\n- Починай кожен хештег з #.\n\ninstagram_image_prompt:\n\n- ТІЛЬКИ англійською.\n- Cinematic.\n- Hyper realistic.\n- 8K.\n- Dark fantasy.\n- Dramatic lighting.\n- Highly detailed.\n- Mystical atmosphere.\n- Без тексту на зображенні.\n\ntelegram_post:\n\n- Готовий пост українською мовою.\n- До 1500 символів.\n- Містичний, атмосферний стиль.\n- Починай із сильного хука, який одразу викликає цікавість.\n- Текст має бути більш розгорнутим, ніж TikTok, але легким для читання в Telegram.\n- Використовуй короткі абзаци.\n- Можна використовувати емодзі, але помірно.\n- Створи відчуття особистого звернення до читача.\n- Наприкінці додай заклик до дії: написати свою думку, обрати варіант, поставити реакцію або поділитися постом.\n- Не вставляй хештеги всередину тексту.\n\ntelegram_hashtags:\n\n- Обов'язково.\n- 5 релевантних українських хештегів.\n- Один рядок.\n- Починай кожен хештег з #.\n\ntelegram_image_prompt:\n\n- ТІЛЬКИ англійською.\n- Cinematic.\n- Hyper realistic.\n- 8K.\n- Dark fantasy.\n- Dramatic lighting.\n- Highly detailed.\n- Mystical atmosphere.\n- Без тексту на зображенні.\n\nВАЖЛИВО:\n\n- Відповідай ЛИШЕ JSON.\n- Не використовуй ```json.\n- Не додавай пояснень.\n- Усі image_prompt тільки англійською.\n- Усі пости тільки українською.\n- Хештеги обов'язкові.\n- JSON повинен бути валідним.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1344,
+        240
+      ],
+      "id": "e84c7384-bd1c-425e-9815-a18f9d75ebb3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1216,
+        448
+      ],
+      "id": "103f5f54-8eb9-4cf5-b1a2-f152d20580d2",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        1120,
+        240
+      ],
+      "id": "70bb3f62-6fd9-4dc1-b950-a3c7dbbf2f08",
+      "name": "Telegram Trigger"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2528,
+        192
+      ],
+      "id": "8707a3dc-13bc-48c4-863e-519f6cf5f5b6",
+      "name": "Wait"
+    },
+    {
+      "parameters": {
+        "operation": "uploadFile",
+        "additionalFieldsFile": {}
+      },
+      "type": "n8n-nodes-cloudinary.cloudinary",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        176
+      ],
+      "id": "73adaac6-c5ca-4849-9c86-6e14aa75d4e8",
+      "name": "Upload an asset from file data"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3232,
+        272
+      ],
+      "id": "b3cdd9ec-1907-4a89-b8b6-50a5a9233286",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "resource": "post",
+        "organizationId": "=",
+        "channelId": "=",
+        "postText": "={{ $json.post }}{{ $json.hashtags }}",
+        "attachmentType": "image",
+        "imageUrl": "={{ $json.secure_url }}"
+      },
+      "type": "@bufferapp/n8n-nodes-buffer.buffer",
+      "typeVersion": 1,
+      "position": [
+        3680,
+        272
+      ],
+      "id": "5bef7f13-e71c-4abc-adf6-a5704f6d378b",
+      "name": "Create a post Instagram"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2448,
+        576
+      ],
+      "id": "fc58246c-0d88-40b4-8d0c-f054940ce1d7",
+      "name": "Wait1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3360,
+        576
+      ],
+      "id": "3cc95dbb-0feb-4cd3-a7f0-59153b034529",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "content": "Instagram & Telegram AI Content Automation**Created by: Yuliia Sheremeta**\n\nWorkflow:\nTelegram Trigger → AI Agent → JavaScript → Switch → Instagram / Telegram\n\n1. Telegram Trigger\nReceives a topic or content idea from my private Telegram bot and starts the workflow.\n\n2. AI Agent (Google Gemini)\nGenerates platform-specific content:\n- Instagram post\n- Instagram hashtags\n- Instagram image prompt\n- Telegram post\n- Telegram hashtags\n- Telegram image prompt\n\nThe output is returned as structured JSON.\n\n3. JavaScript\nParses the AI Agent JSON response and creates two separate items:\n- platform: instagram\n- platform: telegram\n\n4. Switch\nRoutes each item to the correct platform branch based on the \"platform\" value.\n\nINSTAGRAM BRANCH\n\n5. HTTP Request\nGenerates an AI image using the Instagram image_prompt.\n\n6. Wait\nWaits for the image generation process.\n\n7. Upload Asset\nUploads the generated image and prepares it for publishing.\n\n8. Merge\nCombines the generated image with the Instagram post data.\n\n9. Create Instagram Post\nAutomatically publishes the image, caption and hashtags to Instagram.\n\nTELEGRAM BRANCH\n\n10. HTTP Request\nGenerates a separate AI image using the Telegram image_prompt.\n\n11. Wait\nWaits for the image generation process.\n\n12. Merge\nCombines the generated image with the Telegram post data.\n\n13. Send Photo Message\nPublishes the generated image and caption to the target Telegram group using a separate Telegram bot.\n\nTelegram architecture:\nPrivate Bot → n8n → AI Generation → Publishing Bot → Telegram Group\n\nImportant:\nThe Telegram publishing node uses the Telegram GROUP Chat ID, not the user ID or bot ID.\n## Author\n\nYuliia Sheremeta\nMarketing Automation & AI Workflow Specialist",
+        "height": 1312,
+        "width": 912
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "a3833cbc-3a17-45e6-9835-c7010b052fa1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Instagram",
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3568,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "b78e4c79-1415-4708-aa67-cdcc886e0a17",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "={{ $json.post }}{{ $json.hashtags }}"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3584,
+        576
+      ],
+      "id": "8db946b8-3ecd-418a-a694-fa8819d3ab86",
+      "name": "Send a photo message"
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = $input.first().json.output;\n\n// AI повертає JSON як текст\nconst parsed = JSON.parse(output);\n\nreturn [\n  {\n    json: {\n      platform: \"instagram\",\n      post: parsed.instagram_post,\n      hashtags: parsed.instagram_hashtags,\n      image_prompt: parsed.instagram_image_prompt\n    }\n  },\n  {\n    json: {\n      platform: \"telegram\",\n      post: parsed.telegram_post,\n      hashtags: parsed.telegram_hashtags,\n      image_prompt: parsed.telegram_image_prompt\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        240
+      ],
+      "id": "ad5aee3c-658b-44bc-8654-12c065f1634b",
+      "name": "JavaScript JSON Parser"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "=instagram",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "fab7d092-bf3f-45bd-9e94-1964a2b79b23"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "bd012168-b2d3-462c-b589-21aee58a05a4",
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "=telegram",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1984,
+        304
+      ],
+      "id": "5a104261-7bf3-4b05-a0ed-932b37a2b2ad",
+      "name": "Platform Routing with Switch"
+    },
+    {
+      "parameters": {
+        "url": "=https://image.pollinations.ai/prompt/{{ encodeURIComponent($json.image_prompt) }}?nocache={{ $now.toMillis() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2256,
+        192
+      ],
+      "id": "66d9328c-b6ab-488e-8515-15cc734767bc",
+      "name": "Instagram Image Generation"
+    },
+    {
+      "parameters": {
+        "url": "=https://image.pollinations.ai/prompt/{{ encodeURIComponent($json.image_prompt) }}?noCache={{ $now.toMillis() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2224,
+        480
+      ],
+      "id": "c6a20b4d-c089-45bb-b9da-de72d02782ea",
+      "name": "Telegram Image Generation"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "JavaScript JSON Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Upload an asset from file data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload an asset from file data": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Create a post Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JavaScript JSON Parser": {
+      "main": [
+        [
+          {
+            "node": "Platform Routing with Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Platform Routing with Switch": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Instagram Image Generation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Image Generation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Image Generation": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Image Generation": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "nodeGroups": [],
+  "tags": []
+}
